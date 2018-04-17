@@ -1,11 +1,6 @@
 from uuid import uuid4
 from copy import deepcopy
 from .board_constants import INITIAL_BOARD
-import requests
-
-
-PORT = 8080
-API_URL = 'http://localhost:{}'.format(PORT)
 
 
 class BaseBoard:
@@ -29,6 +24,9 @@ class BaseBoard:
         else:
             self.board = deepcopy(INITIAL_BOARD)
 
+    def request(self, *args, **kwargs):
+        assert False
+
     def close(self):
         del self.GAMES[self.id]
 
@@ -42,8 +40,4 @@ class BaseBoard:
         """
         Inform active player of game state.
         """
-        self.executor.submit(
-            requests.put,
-            f'{ API_URL }/agent/{ active_player or self.active_player() }',
-            data={'end': False}
-        ).add_done_callback(self.handle_future)
+        self.request('PUT', f'/agent/{ active_player or self.active_player() }', data={'end': end})
